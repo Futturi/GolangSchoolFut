@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Futturi/GolangSchoolProject/internal/models"
 	"github.com/jmoiron/sqlx"
@@ -53,4 +54,42 @@ func (r *LessonRepo) DeleteLesson(user, lesson_id int) error {
 		return err
 	}
 	return nil
+}
+
+func (r *LessonRepo) GetLesson(id, lesson_id int) (models.Lesson, error) {
+	var result models.Lesson
+	query := fmt.Sprintf(`SELECT l.id, l.title, l.filling FROM %s
+	 l INNER JOIN %s tl ON l.id = tl.lesson_id WHERE l.id = tl.lesson_id AND tl.teacher_id = $1
+	 AND l.id = $2`, lessonsTable, lesson_teacher_table)
+
+	row := r.db.QueryRow(query, id, lesson_id)
+	if err := row.Scan(&result.Id, &result.Title, &result.Filling); err != nil {
+		return models.Lesson{}, err
+	}
+	return result, nil
+}
+
+func (r *LessonRepo) UpdateLesson(id, lesson_id int, fil models.UpdateLesson) (models.UpdateLesson, error) {
+	args := make([]interface{}, 0)
+	setVal := make([]string, 0)
+	argid := 1
+	if fil.Title != nil {
+		setVal = append(setVal, fmt.Sprintf("title=$%d", argid))
+		args = append(args, *fil.Title)
+		argid++
+	}
+	if fil.Filling != nil {
+		setVal = append(setVal, fmt.Sprintf("filling=$%d", argid))
+		args = append(args, *(fil.Filling))
+		argid++
+	}
+	setQuery := strings.Join(setVal, ",")
+	query := fmt.Sprintf("UPDATE %s l SET %s FROM %s tl WHERE l.id = tl.lesson_id AND l.id = $%d AND tl.teacher_id = $%d", lessonsTable, setQuery, lesson_teacher_table, argid, argid+1)
+	args = append(args, lesson_id, id)
+
+	_, err := r.db.Exec(query, args...)
+	if err != nil {
+		return models.UpdateLesson{}, err
+	}
+	return fil, nil
 }

@@ -22,6 +22,8 @@ type Lessons interface {
 	GetAllLessonsTeacher(id int) ([]models.Lesson, error)
 	CreateLesson(userId int, mod models.Lesson) (int, error)
 	DeleteLesson(user, lesson_id int) error
+	GetLesson(id, lesson_id int) (models.Lesson, error)
+	UpdateLesson(id, lesson_id int, fil models.UpdateLesson) (models.UpdateLesson, error)
 }
 
 type Authorization interface {

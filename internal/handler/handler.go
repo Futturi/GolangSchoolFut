@@ -14,7 +14,7 @@ func NewHandler(serv *service.Service) *Handler {
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
-	handler := gin.New()
+	handler := gin.Default()
 	teacher := handler.Group("/admin")
 	{
 		auth := teacher.Group("/auth")
@@ -28,12 +28,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			lessons.GET("/", h.GetAllLessonsTeacher)
 			lessons.POST("/", h.CreateLesson)
 			lessons.DELETE("/:lesson_id", h.DeleteLesson)
-			// 	lesson := lessons.Group("/:lesson_id")
-			// 	{
-			// 		lesson.GET("/", func(ctx *gin.Context) {})
-			// 		lesson.POST("/", func(ctx *gin.Context) {}) // создать урок
-			// 		lesson.POST("/", func(ctx *gin.Context) {}) // создать дз
-			// 	}
+			lesson := lessons.Group("/:lesson_id")
+			{
+				lesson.GET("/", h.GetLesson)
+				lesson.POST("/", h.UpdateLesson) // изменение урока
+				//lesson.POST("/", func(ctx *gin.Context) {}) // создать урок
+				//lesson.POST("/", func(ctx *gin.Context) {}) // создать дз
+			}
 		}
 	}
 	// user := handler.Group("/user")
