@@ -15,6 +15,7 @@ func NewHandler(serv *service.Service) *Handler {
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	handler := gin.Default()
+	//handler.GET("/") //инфа о школе, которая хранится в кэше(редисе)
 	teacher := handler.Group("/admin")
 	{
 		auth := teacher.Group("/auth")
@@ -28,11 +29,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			lessons.GET("/", h.GetAllLessonsTeacher)
 			lessons.POST("/", h.CreateLesson)
 			lessons.DELETE("/:lesson_id", h.DeleteLesson)
+			lessons.PUT("/:lesson_id", h.UpdateLesson)
 			lesson := lessons.Group("/:lesson_id")
 			{
 				lesson.GET("/", h.GetLesson)
-				lesson.POST("/", h.UpdateLesson) // изменение урока
-				//lesson.POST("/", func(ctx *gin.Context) {}) // создать урок
+				//TODO доделать логику добавления файла
+				lesson.POST("/", h.CreateHomework) // создать дз
 				//lesson.POST("/", func(ctx *gin.Context) {}) // создать дз
 			}
 		}
@@ -54,5 +56,15 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	return handler
 }
 
-//TODO: добавить в бд поля для дз, выполнено оно или нет + соединить дз с
-// с таблицей урока, в дз хранить чисто выполнено дз или нет
+//TODO: Добавить в таблицу про дз + в структуру по дз
+// поля связанные с выполнением дз(бул переменная)
+// добавить общий get запрос на котором будет инфа про школу
+// инфу буду хранить в редисе(как кэш собстна)
+// сделать у каждого прользователя время до которого он может испол0ьзовать
+// урок, если дз по уроку не выполнено, то у юзера -сердце, если
+// количество сердец < 0, юзер вылетает с курса(заблокать)
+// попробовать добавить оплату, пока даже хз как это делается
+// мб добавить микросервис oauth для понимания микр арх и свзяи двух микр
+// k8s и тд
+//добавить логирование
+// отправка писем про подтверждение email(разобраться)

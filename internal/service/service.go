@@ -15,8 +15,10 @@ type Lessons interface {
 	CreateLesson(userId int, mod models.Lesson) (int, error)
 	DeleteLesson(user, lesson_id int) error
 	GetLesson(id, lesson_id int) (models.Lesson, error)
+	CreateHomework(homework models.Homework, lesson_id int) (string, error)
 	UpdateLesson(id, lesson_id int, fil models.UpdateLesson) (models.UpdateLesson, error)
 }
+
 type Authorization interface {
 	SignUp(mod models.Teacher) (int, error)
 	SignIn(mod models.SignInTeacher) (string, string, error)

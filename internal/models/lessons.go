@@ -3,9 +3,10 @@ package models
 import "errors"
 
 type Lesson struct {
-	Id      int    `json:"id" db:"id"`
-	Title   string `json:"title" db:"title"`
-	Filling string `json:"filling" db:"filling"`
+	Id       int    `json:"id" db:"id"`
+	Title    string `json:"title" db:"title"`
+	Filling  string `json:"filling" db:"filling"`
+	Homework Homework
 }
 
 type LessonFile struct {
@@ -20,7 +21,13 @@ type UpdateLesson struct {
 
 func (u UpdateLesson) Validate() error {
 	if u.Title == nil && u.Filling == nil {
-		errors.New("no values in update")
+		return errors.New("no values in update")
 	}
 	return nil
+}
+
+type Homework struct {
+	Id       int    `json:"id" db:"id"`
+	Title    string `json:"title" db:"title"`
+	Descript string `json:"descript" db:"descript"`
 }

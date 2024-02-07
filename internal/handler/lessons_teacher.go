@@ -164,3 +164,31 @@ func (h *Handler) UpdateLesson(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
+func (h *Handler) CreateHomework(c *gin.Context) {
+	var homework models.Homework
+
+	lesson_id, err := strconv.Atoi(c.Param("lesson_id"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+
+	err = c.BindJSON(&homework)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+
+	result, err := h.service.CreateHomework(homework, lesson_id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": result,
+	})
+}

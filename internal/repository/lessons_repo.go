@@ -93,3 +93,28 @@ func (r *LessonRepo) UpdateLesson(id, lesson_id int, fil models.UpdateLesson) (m
 	}
 	return fil, nil
 }
+
+func (r *LessonRepo) CreateHomework(homework models.Homework, lesson_id int) (string, error) {
+	var idhom int
+	tx, err := r.db.Begin()
+	if err != nil {
+		return "bad", err
+	}
+
+	query1 := fmt.Sprintf("INSERT INTO %s(title, descript, lesson_id) VALUES ($1, $2, $3) RETURNING id", homeworkTable)
+
+	row := tx.QueryRow(query1, homework.Title, homework.Descript, lesson_id)
+	err = row.Scan(&idhom)
+	if err != nil {
+		tx.Rollback()
+		return "bad", err
+	}
+
+	query2 := fmt.Sprintf("UPDATE %s SET homework_id = $1 WHERE id = $2", lessonsTable)
+	_, err = tx.Exec(query2, idhom, lesson_id)
+	if err != nil {
+		tx.Rollback()
+		return "bad", err
+	}
+	return "good", tx.Commit()
+}

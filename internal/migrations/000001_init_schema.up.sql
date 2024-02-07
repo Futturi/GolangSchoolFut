@@ -10,11 +10,19 @@ create table teacher
     refresh_token_exxpiry bigint not null default 0
 );
 
+create table homeworks
+(
+    id bigserial primary key,
+    title varchar(50),
+    descript text
+);
+
 create table lesson
 (
     id bigserial primary key,
     title varchar(50),
-    filling text
+    filling text,
+    homework_id bigint references homeworks(id) on delete cascade
 );
 
 create table lesson_teacher
@@ -42,3 +50,12 @@ create table lesson_user
     lesson_id bigint not null references lesson(id) on delete cascade,
     user_id bigint not null references student(id) on delete cascade
 );
+
+create table homeworks_user
+(
+    id bigserial primary key,
+    homework_id bigint not null references homeworks(id) on delete cascade,
+    user_id bigint not null references student(id) on delete cascade
+);
+
+ALTER TABLE homeworks ADD COLUMN lesson_id bigint references lesson(id) on delete cascade;

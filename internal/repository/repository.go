@@ -11,6 +11,8 @@ const (
 	lesson_teacher_table = "lesson_teacher"
 	studentTable         = "student"
 	lesson_userTable     = "lesson_user"
+	homeworkTable        = "homeworks"
+	homeworks_userTable  = "homeworks_user"
 )
 
 type Repository struct {
@@ -23,6 +25,7 @@ type Lessons interface {
 	CreateLesson(userId int, mod models.Lesson) (int, error)
 	DeleteLesson(user, lesson_id int) error
 	GetLesson(id, lesson_id int) (models.Lesson, error)
+	CreateHomework(homework models.Homework, lesson_id int) (string, error)
 	UpdateLesson(id, lesson_id int, fil models.UpdateLesson) (models.UpdateLesson, error)
 }
 
