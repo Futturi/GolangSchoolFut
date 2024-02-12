@@ -38,3 +38,7 @@ func (s *LessonsService) UpdateLesson(id, lesson_id int, fil models.UpdateLesson
 func (s *LessonsService) CreateHomework(homework models.Homework, lesson_id int) (string, error) {
 	return s.repo.CreateHomework(homework, lesson_id)
 }
+
+func (s *LessonsService) PutFile(name string, lesson_id int) error {
+	return s.repo.PutFile(name, lesson_id)
+}

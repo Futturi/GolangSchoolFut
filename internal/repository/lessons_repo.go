@@ -118,3 +118,12 @@ func (r *LessonRepo) CreateHomework(homework models.Homework, lesson_id int) (st
 	}
 	return "good", tx.Commit()
 }
+
+func (r *LessonRepo) PutFile(name string, lesson_id int) error {
+	query := fmt.Sprintf("UPDATE %s SET filename = $1 WHERE id = $2", lessonsTable)
+	_, err := r.db.Exec(query, name, lesson_id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

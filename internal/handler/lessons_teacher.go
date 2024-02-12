@@ -116,36 +116,6 @@ func (h *Handler) UpdateLesson(c *gin.Context) {
 		})
 	}
 
-	file, handl, err := c.Request.FormFile("file")
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
-			"error": err.Error(),
-		})
-	}
-	defer file.Close()
-
-	dir := "lesson_files/" + strconv.Itoa(lesson_id)
-	if _, err = os.Stat(dir); os.IsNotExist(err) {
-		os.MkdirAll(dir, 0755)
-	}
-
-	f, err := os.OpenFile(filepath.Join(dir, handl.Filename), os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
-			"error": err.Error(),
-		})
-	}
-
-	defer f.Close()
-
-	_, err = io.Copy(f, file)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
-			"error": err.Error(),
-		})
-	}
-
 	//TODO доделать сохранение файлов, мы должны хранить инфу о файле в бд
 	// путь(dir) названиe(f)
 
@@ -190,5 +160,51 @@ func (h *Handler) CreateHomework(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": result,
+	})
+}
+
+func (h *Handler) PutFile(c *gin.Context) {
+	file, handl, err := c.Request.FormFile("file")
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	defer file.Close()
+	lesson_id, err := strconv.Atoi(c.Param("lesson_id"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	dir := "lesson_files/" + strconv.Itoa(lesson_id)
+	if _, err = os.Stat(dir); os.IsNotExist(err) {
+		os.MkdirAll(dir, 0755)
+	}
+
+	f, err := os.OpenFile(filepath.Join(dir, handl.Filename), os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+
+	defer f.Close()
+	name := f.Name()
+	err = h.service.PutFile(name, lesson_id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	_, err = io.Copy(f, file)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, map[string]string{
+		"status": "ok",
 	})
 }

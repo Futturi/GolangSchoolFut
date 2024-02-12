@@ -6,6 +6,8 @@ drop table if exists lesson_teacher;
 
 drop table if exists teacher;
 
+alter table homeworks drop COLUMN lesson_id;
+
 drop table if exists lesson;
 
 drop table if exists student;

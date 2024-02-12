@@ -17,6 +17,7 @@ type Lessons interface {
 	GetLesson(id, lesson_id int) (models.Lesson, error)
 	CreateHomework(homework models.Homework, lesson_id int) (string, error)
 	UpdateLesson(id, lesson_id int, fil models.UpdateLesson) (models.UpdateLesson, error)
+	PutFile(name string, lesson_id int) error
 }
 
 type Authorization interface {

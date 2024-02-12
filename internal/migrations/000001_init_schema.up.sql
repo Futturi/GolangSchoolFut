@@ -14,7 +14,8 @@ create table homeworks
 (
     id bigserial primary key,
     title varchar(50),
-    descript text
+    descript text,
+    is_verified boolean
 );
 
 create table lesson
@@ -22,7 +23,8 @@ create table lesson
     id bigserial primary key,
     title varchar(50),
     filling text,
-    homework_id bigint references homeworks(id) on delete cascade
+    homework_id bigint references homeworks(id) on delete cascade,
+    file_name varchar(100)
 );
 
 create table lesson_teacher

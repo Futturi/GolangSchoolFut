@@ -27,7 +27,8 @@ func (u UpdateLesson) Validate() error {
 }
 
 type Homework struct {
-	Id       int    `json:"id" db:"id"`
-	Title    string `json:"title" db:"title"`
-	Descript string `json:"descript" db:"descript"`
+	Id          int    `json:"id" db:"id"`
+	Title       string `json:"title" db:"title"`
+	Descript    string `json:"descript" db:"descript"`
+	Is_Verified bool   `json:"verified" db:"is_verified"`
 }
