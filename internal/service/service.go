@@ -8,6 +8,8 @@ import (
 type Service struct {
 	Authorization
 	Lessons
+	AuthorizationUser
+	LessonsUser
 }
 
 type Lessons interface {
@@ -18,6 +20,8 @@ type Lessons interface {
 	CreateHomework(homework models.Homework, lesson_id int) (string, error)
 	UpdateLesson(id, lesson_id int, fil models.UpdateLesson) (models.UpdateLesson, error)
 	PutFile(name string, lesson_id int) error
+	CheckHomework(teacher_id, lesson_id, status int) error
+	GetHomework(lesson_id int) (models.Homework, error)
 }
 
 type Authorization interface {
@@ -27,6 +31,20 @@ type Authorization interface {
 	ParseToken(header string) (int, error)
 }
 
+type AuthorizationUser interface {
+	SignUpStudent(user models.Student) (string, error)
+	SignInStudent(userlog models.SignInStudent) (string, error)
+	ParseTokenUser(header string) (int, error)
+}
+
+type LessonsUser interface {
+	GetAllLessonsuser(user_id int) ([]models.LessonUser, error)
+}
+
 func NewService(repo *repository.Repository) *Service {
-	return &Service{Authorization: NewAuthService(repo.Authorization), Lessons: NewLessonsService(repo.Lessons)}
+	return &Service{Authorization: NewAuthService(repo.Authorization),
+		Lessons:           NewLessonsService(repo.Lessons),
+		AuthorizationUser: NewAuthServiceUser(repo.AuthorizationUser),
+		LessonsUser:       NewLesson_User(repo.LessonsUser),
+	}
 }

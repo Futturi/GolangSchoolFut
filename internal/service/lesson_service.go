@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/Futturi/GolangSchoolProject/internal/models"
 	"github.com/Futturi/GolangSchoolProject/internal/repository"
 )
@@ -41,4 +43,15 @@ func (s *LessonsService) CreateHomework(homework models.Homework, lesson_id int)
 
 func (s *LessonsService) PutFile(name string, lesson_id int) error {
 	return s.repo.PutFile(name, lesson_id)
+}
+
+func (s *LessonsService) CheckHomework(teacher_id, lesson_id, status int) error {
+	if status > 5 || status < 0 {
+		return errors.New("your mark is > than 5 or < than 0")
+	}
+	return s.repo.CheckHomework(teacher_id, lesson_id, status)
+}
+
+func (s *LessonsService) GetHomework(lesson_id int) (models.Homework, error) {
+	return s.repo.GetHomework(lesson_id)
 }

@@ -15,3 +15,8 @@ type SignInTeacher struct {
 	Username string `json:"username" db:"username"`
 	Password string `json:"password" db:"password_hash"`
 }
+
+type SignInStudent struct {
+	Username string `json:"username" db:"username"`
+	Password string `json:"password" db:"password_hash"`
+}

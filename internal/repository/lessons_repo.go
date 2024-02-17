@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -28,6 +29,7 @@ func (r *LessonRepo) GetAllLessonsTeacher(id int) ([]models.Lesson, error) {
 
 func (r *LessonRepo) CreateLesson(userId int, mod models.Lesson) (int, error) {
 	var id int
+	var user int
 	tx, err := r.db.Begin()
 	if err != nil {
 		return 0, err
@@ -44,7 +46,28 @@ func (r *LessonRepo) CreateLesson(userId int, mod models.Lesson) (int, error) {
 		tx.Rollback()
 		return 0, err
 	}
-	return id, tx.Commit()
+	if err = tx.Commit(); err != nil {
+		return 0, err
+	}
+	tx2, err := r.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+	for _, stud := range mod.Students {
+		queryrr := fmt.Sprintf("SELECT id FROM %s WHERE username = $1", studentTable)
+		row := tx2.QueryRow(queryrr, stud)
+		if err = row.Scan(&user); err != nil {
+			tx2.Rollback()
+			return 0, errors.New("you entered wrong username users")
+		}
+		queryr4 := fmt.Sprintf("INSERT INTO %s(lesson_id, user_id) VALUES($1, $2)", lesson_userTable)
+		_, err = tx2.Exec(queryr4, id, user)
+		if err != nil {
+			tx2.Rollback()
+			return 0, err
+		}
+	}
+	return id, tx2.Commit()
 }
 
 func (r *LessonRepo) DeleteLesson(user, lesson_id int) error {
@@ -126,4 +149,23 @@ func (r *LessonRepo) PutFile(name string, lesson_id int) error {
 		return err
 	}
 	return nil
+}
+func (r *LessonRepo) CheckHomework(teacher_id, lesson_id, status int) error {
+	query := fmt.Sprintf("UPDATE %s SET mark = $1 FROM %s l WHERE l.id = $2", homeworkTable, lessonsTable)
+	_, err := r.db.Exec(query, status, lesson_id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *LessonRepo) GetHomework(lesson_id int) (models.Homework, error) {
+	var hm models.Homework
+	query := fmt.Sprintf("SELECT title, descript,mark from %s h INNER JOIN %s l WHERE l.id = $1 AND l.homework_id=h.id", homeworkTable, lessonsTable)
+	row := r.db.QueryRow(query, lesson_id)
+	if err := row.Scan(&hm); err != nil {
+		return models.Homework{}, err
+	}
+
+	return hm, nil
 }

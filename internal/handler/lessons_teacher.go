@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/Futturi/GolangSchoolProject/internal/models"
 	"github.com/gin-gonic/gin"
@@ -207,4 +208,56 @@ func (h *Handler) PutFile(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{
 		"status": "ok",
 	})
+}
+
+func (h *Handler) CheckHomework(c *gin.Context) {
+	var status models.Homework
+	url := c.Request.URL.Path
+	masurl := strings.Split(url, "/")
+	lesson_id, err := strconv.Atoi(masurl[3])
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	teacher_id, err := getUserId(c)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+
+	err = c.BindJSON(&status)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	err = h.service.CheckHomework(teacher_id, lesson_id, status.Mark)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, map[string]string{
+		"status": "ok",
+	})
+}
+
+func (h *Handler) GetHomework(c *gin.Context) {
+	url := c.Request.URL.Path
+	masurl := strings.Split(url, "/")
+	lesson_id, err := strconv.Atoi(masurl[3])
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	result, err := h.service.GetHomework(lesson_id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, result)
 }

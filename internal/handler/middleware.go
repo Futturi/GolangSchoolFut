@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -43,4 +44,25 @@ func getUserId(c *gin.Context) (int, error) {
 		return 0, errors.New("error while converting header to int")
 	}
 	return idInt, nil
+}
+
+func (h *Handler) CheckIdentityUser(c *gin.Context) {
+	header := c.GetHeader("Authorization")
+	if header == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "empty token"})
+		c.AbortWithStatus(http.StatusUnauthorized)
+	}
+	spl := strings.Split(header, " ")
+	if len(spl) != 2 {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		c.AbortWithStatus(http.StatusUnauthorized)
+	}
+	fmt.Println(header)
+	userid, err := h.service.ParseTokenUser(spl[1])
+	if err != nil {
+		fmt.Println(userid)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.AbortWithStatus(http.StatusUnauthorized)
+	}
+	c.Set(userHeader, userid)
 }

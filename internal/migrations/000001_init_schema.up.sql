@@ -15,7 +15,7 @@ create table homeworks
     id bigserial primary key,
     title varchar(50),
     descript text,
-    is_verified boolean
+    mark int
 );
 
 create table lesson

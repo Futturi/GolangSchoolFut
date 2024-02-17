@@ -3,6 +3,14 @@ package models
 import "errors"
 
 type Lesson struct {
+	Id       int      `json:"id" db:"id"`
+	Title    string   `json:"title" db:"title"`
+	Filling  string   `json:"filling" db:"filling"`
+	Students []string `json:"students" db:"students"`
+	Homework Homework
+}
+
+type LessonUser struct {
 	Id       int    `json:"id" db:"id"`
 	Title    string `json:"title" db:"title"`
 	Filling  string `json:"filling" db:"filling"`
@@ -27,8 +35,15 @@ func (u UpdateLesson) Validate() error {
 }
 
 type Homework struct {
-	Id          int    `json:"id" db:"id"`
-	Title       string `json:"title" db:"title"`
-	Descript    string `json:"descript" db:"descript"`
-	Is_Verified bool   `json:"verified" db:"is_verified"`
+	Id       int    `json:"id" db:"id"`
+	Title    string `json:"title" db:"title"`
+	Descript string `json:"descript" db:"descript"`
+	Mark     int    `json:"mark" db:"mark"`
+}
+
+type HomeworkTeacher struct {
+	Id       int    `json:"id" db:"id"`
+	Title    string `json:"title" db:"title"`
+	Descript string `json:"descript" db:"descript"`
+	Mark     int    `json:"mark" db:"mark"`
 }

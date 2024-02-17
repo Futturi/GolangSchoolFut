@@ -33,30 +33,30 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			lesson := lessons.Group("/:lesson_id")
 			{
 				lesson.GET("/", h.GetLesson)
-				lesson.PUT("/", h.PutFile)         // хз насчет метода put
-				lesson.POST("/", h.CreateHomework) // создать дз
+				lesson.PUT("/", h.PutFile)
+				lesson.POST("/", h.CreateHomework)
 				homework := lesson.Group("/homework")
 				{
-					homework.POST("/") // проверка дз, просто меняем флаг проверки
-					homework.GET("/")  // получение дз
+					homework.POST("/", h.CheckHomework)
+					homework.GET("/", h.GetHomework)
 				}
 			}
 		}
 	}
-	// user := handler.Group("/user")
-	// {
-	// 	auth := user.Group("/auth")
-	// 	{
-	// 		auth.POST("/signup", func(ctx *gin.Context) {})
-	// 		auth.POST("/signin", func(ctx *gin.Context) {})
-	// 	}
-	// 	lessons := user.Group("/lessons")
-	// 	{
-	// 		lessons.GET("/", func(ctx *gin.Context) {})
-	// 		lessons.GET("/:lesson_id", func(ctx *gin.Context) {})  // получить дз + получить сам урок
-	// 		lessons.POST("/:lesson_id", func(ctx *gin.Context) {}) // отправить выполненное дз на проверку
-	// 	}
-	// }
+	user := handler.Group("/user")
+	{
+		auth := user.Group("/auth")
+		{
+			auth.POST("/signup", h.SignUpUser)
+			auth.POST("/signin", h.SignInUser)
+		}
+		lessons := user.Group("/lessons", h.CheckIdentityUser)
+		{
+			lessons.GET("/", h.GetAllLessonsUser)
+			// 		lessons.GET("/:lesson_id", func(ctx *gin.Context) {})  // получить дз + получить сам урок
+			// 		lessons.POST("/:lesson_id", func(ctx *gin.Context) {}) // отправить выполненное дз на проверку
+		}
+	}
 	return handler
 }
 
