@@ -15,7 +15,8 @@ func NewHandler(serv *service.Service) *Handler {
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	handler := gin.Default()
-	//handler.GET("/") //инфа о школе, которая хранится в кэше(редисе)
+	handler.GET("/", h.Info) //инфа о школе, которая хранится в кэше(редисе)
+	// кол-во учеников, кол-во уроков
 	teacher := handler.Group("/admin")
 	{
 		auth := teacher.Group("/auth")
@@ -33,8 +34,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			lesson := lessons.Group("/:lesson_id")
 			{
 				lesson.GET("/", h.GetLesson)
-				lesson.PUT("/", h.PutFile)
-				lesson.POST("/", h.CreateHomework)
+				lesson.POST("/", h.PutFile)
 				homework := lesson.Group("/homework")
 				{
 					homework.POST("/", h.CheckHomework)
@@ -50,11 +50,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			auth.POST("/signup", h.SignUpUser)
 			auth.POST("/signin", h.SignInUser)
 		}
-		lessons := user.Group("/lessons", h.CheckIdentityUser)
+		lessons := user.Group("/lessons", h.CheckIdentityUser, h.CheckHealth)
 		{
 			lessons.GET("/", h.GetAllLessonsUser)
-			// 		lessons.GET("/:lesson_id", func(ctx *gin.Context) {})  // получить дз + получить сам урок
-			// 		lessons.POST("/:lesson_id", func(ctx *gin.Context) {}) // отправить выполненное дз на проверку
+			lessons.GET("/:lesson_id", h.GetLessonUser)
+			lessons.POST("/:lesson_id", h.SolveHomework)
 		}
 	}
 	return handler
@@ -63,9 +63,5 @@ func (h *Handler) InitRoutes() *gin.Engine {
 //TODO:
 // добавить общий get запрос на котором будет инфа про школу
 // инфу буду хранить в редисе(как кэш собстна)
-// сделать у каждого прользователя время до которого он может испол0ьзовать
-// урок, если дз по уроку не выполнено, то у юзера -сердце, если
-// количество сердец < 0, юзер вылетает с курса(заблокать)
-// попробовать добавить оплату, пока даже хз как это делается
 // добавить логирование
 // отправка писем про подтверждение email(разобраться)

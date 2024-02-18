@@ -4,9 +4,9 @@ drop table if exists lesson_user;
 
 drop table if exists lesson_teacher;
 
-drop table if exists teacher;
+drop table if exists lesson_homeworks;
 
-alter table homeworks drop COLUMN lesson_id;
+drop table if exists teacher;
 
 drop table if exists lesson;
 

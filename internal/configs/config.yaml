@@ -6,3 +6,6 @@ db:
  username: "root"
  namedb: "root"
  sslmode: "disable"
+red:
+ port: "6379"
+ host: "localhost:"

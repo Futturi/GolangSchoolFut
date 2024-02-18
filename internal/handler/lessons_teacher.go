@@ -136,34 +136,6 @@ func (h *Handler) UpdateLesson(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func (h *Handler) CreateHomework(c *gin.Context) {
-	var homework models.Homework
-
-	lesson_id, err := strconv.Atoi(c.Param("lesson_id"))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
-			"error": err.Error(),
-		})
-	}
-
-	err = c.BindJSON(&homework)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
-			"error": err.Error(),
-		})
-	}
-
-	result, err := h.service.CreateHomework(homework, lesson_id)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
-			"error": err.Error(),
-		})
-	}
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"status": result,
-	})
-}
-
 func (h *Handler) PutFile(c *gin.Context) {
 	file, handl, err := c.Request.FormFile("file")
 	if err != nil {
@@ -211,7 +183,7 @@ func (h *Handler) PutFile(c *gin.Context) {
 }
 
 func (h *Handler) CheckHomework(c *gin.Context) {
-	var status models.Homework
+	var status models.CheckHom
 	url := c.Request.URL.Path
 	masurl := strings.Split(url, "/")
 	lesson_id, err := strconv.Atoi(masurl[3])
@@ -233,7 +205,7 @@ func (h *Handler) CheckHomework(c *gin.Context) {
 			"error": err.Error(),
 		})
 	}
-	err = h.service.CheckHomework(teacher_id, lesson_id, status.Mark)
+	err = h.service.CheckHomework(teacher_id, lesson_id, status)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
 			"error": err.Error(),

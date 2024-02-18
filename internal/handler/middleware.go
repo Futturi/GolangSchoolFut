@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -57,12 +56,23 @@ func (h *Handler) CheckIdentityUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
-	fmt.Println(header)
 	userid, err := h.service.ParseTokenUser(spl[1])
 	if err != nil {
-		fmt.Println(userid)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
 	c.Set(userHeader, userid)
+}
+
+func (h *Handler) CheckHealth(c *gin.Context) {
+	user_id, err := getUserId(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.AbortWithStatus(http.StatusUnauthorized)
+	}
+	result := h.service.CheckHealth(user_id)
+	if result <= 0 {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "your health <0, u cant study here"})
+		c.AbortWithStatus(http.StatusUnauthorized)
+	}
 }

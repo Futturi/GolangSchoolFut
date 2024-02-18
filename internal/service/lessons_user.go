@@ -16,3 +16,11 @@ func NewLesson_User(repo repository.LessonsUser) *Lesson_User {
 func (s *Lesson_User) GetAllLessonsuser(user_id int) ([]models.LessonUser, error) {
 	return s.repo.GetAllLessonsuser(user_id)
 }
+
+func (s *Lesson_User) GetLessonUser(user_id, lesson_id int) (models.LessonUser, error) {
+	return s.repo.GetLessonUser(user_id, lesson_id)
+}
+
+func (s *Lesson_User) SolveHomework(user_id, lesson_id int, hw models.HomeworkUser) error {
+	return s.repo.SolveHomework(user_id, lesson_id, hw)
+}

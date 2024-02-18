@@ -9,6 +9,7 @@ import (
 	"github.com/Futturi/GolangSchoolProject/internal/repository"
 	"github.com/Futturi/GolangSchoolProject/internal/server"
 	"github.com/Futturi/GolangSchoolProject/internal/service"
+	"github.com/Futturi/GolangSchoolProject/pkg"
 	repositoryinitf "github.com/Futturi/GolangSchoolProject/pkg/repository_initf"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
@@ -29,11 +30,17 @@ func main() {
 		NameDB:   viper.GetString("db.namedb"),
 		Sslmode:  viper.GetString("db.sslmode"),
 	}
+	rcfg := pkg.RedisConf{
+		Addr:     viper.GetString("red.host") + viper.GetString("red.port"),
+		Password: "",
+		Db:       0,
+	}
+	rdb := pkg.NewRedis(rcfg)
 	db, err := repositoryinitf.InitPostgre(cfg)
 	if err != nil {
 		slog.Error("error while connecting to db", err)
 	}
-	repo := repository.NewReposiotry(db)
+	repo := repository.NewReposiotry(db, rdb)
 	serv := service.NewService(repo)
 	hand := handler.NewHandler(serv)
 

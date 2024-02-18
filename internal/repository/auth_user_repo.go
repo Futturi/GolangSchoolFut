@@ -35,3 +35,13 @@ func (r *Authorization_User) SignInStudent(userlog models.SignInStudent) (int, e
 	}
 	return id, nil
 }
+
+func (r *Authorization_User) CheckHealth(user_id int) int {
+	var health int
+	query := fmt.Sprintf("SELECT health FROM %s WHERE id = $1", studentTable)
+	row := r.db.QueryRow(query, user_id)
+	if err := row.Scan(&health); err != nil {
+		return 0
+	}
+	return health
+}

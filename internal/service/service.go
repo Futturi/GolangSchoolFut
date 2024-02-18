@@ -10,6 +10,7 @@ type Service struct {
 	Lessons
 	AuthorizationUser
 	LessonsUser
+	Infos
 }
 
 type Lessons interface {
@@ -17,11 +18,10 @@ type Lessons interface {
 	CreateLesson(userId int, mod models.Lesson) (int, error)
 	DeleteLesson(user, lesson_id int) error
 	GetLesson(id, lesson_id int) (models.Lesson, error)
-	CreateHomework(homework models.Homework, lesson_id int) (string, error)
 	UpdateLesson(id, lesson_id int, fil models.UpdateLesson) (models.UpdateLesson, error)
 	PutFile(name string, lesson_id int) error
-	CheckHomework(teacher_id, lesson_id, status int) error
-	GetHomework(lesson_id int) (models.Homework, error)
+	CheckHomework(teacher_id, lesson_id int, status models.CheckHom) error
+	GetHomework(lesson_id int) ([]models.Homework, error)
 }
 
 type Authorization interface {
@@ -35,10 +35,17 @@ type AuthorizationUser interface {
 	SignUpStudent(user models.Student) (string, error)
 	SignInStudent(userlog models.SignInStudent) (string, error)
 	ParseTokenUser(header string) (int, error)
+	CheckHealth(user_id int) int
 }
 
 type LessonsUser interface {
 	GetAllLessonsuser(user_id int) ([]models.LessonUser, error)
+	GetLessonUser(user_id, lesson_id int) (models.LessonUser, error)
+	SolveHomework(user_id, lesson_id int, hw models.HomeworkUser) error
+}
+
+type Infos interface {
+	Info() (models.Information, error)
 }
 
 func NewService(repo *repository.Repository) *Service {
@@ -46,5 +53,6 @@ func NewService(repo *repository.Repository) *Service {
 		Lessons:           NewLessonsService(repo.Lessons),
 		AuthorizationUser: NewAuthServiceUser(repo.AuthorizationUser),
 		LessonsUser:       NewLesson_User(repo.LessonsUser),
+		Infos:             NewInfoSer(repo.Info),
 	}
 }

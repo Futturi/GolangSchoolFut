@@ -17,6 +17,13 @@ type LessonUser struct {
 	Homework Homework
 }
 
+type LessonUserWithHome struct {
+	Id         int    `json:"id" db:"id"`
+	Title      string `json:"title" db:"title"`
+	Filling    string `json:"filling" db:"filling"`
+	HomeworkId int    `db:"homework_id"`
+}
+
 type LessonFile struct {
 	FileName string
 	FilePath string
@@ -41,9 +48,13 @@ type Homework struct {
 	Mark     int    `json:"mark" db:"mark"`
 }
 
-type HomeworkTeacher struct {
+type HomeworkUser struct {
 	Id       int    `json:"id" db:"id"`
 	Title    string `json:"title" db:"title"`
 	Descript string `json:"descript" db:"descript"`
-	Mark     int    `json:"mark" db:"mark"`
+}
+
+type CheckHom struct {
+	Mark        int `json:"mark" db:"mark"`
+	Homework_Id int `json:"homework_id" db:"homework_id"`
 }

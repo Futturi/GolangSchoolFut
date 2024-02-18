@@ -37,21 +37,17 @@ func (s *LessonsService) UpdateLesson(id, lesson_id int, fil models.UpdateLesson
 	return s.repo.UpdateLesson(id, lesson_id, fil)
 }
 
-func (s *LessonsService) CreateHomework(homework models.Homework, lesson_id int) (string, error) {
-	return s.repo.CreateHomework(homework, lesson_id)
-}
-
 func (s *LessonsService) PutFile(name string, lesson_id int) error {
 	return s.repo.PutFile(name, lesson_id)
 }
 
-func (s *LessonsService) CheckHomework(teacher_id, lesson_id, status int) error {
-	if status > 5 || status < 0 {
+func (s *LessonsService) CheckHomework(teacher_id, lesson_id int, status models.CheckHom) error {
+	if status.Mark > 5 || status.Mark < 0 {
 		return errors.New("your mark is > than 5 or < than 0")
 	}
 	return s.repo.CheckHomework(teacher_id, lesson_id, status)
 }
 
-func (s *LessonsService) GetHomework(lesson_id int) (models.Homework, error) {
+func (s *LessonsService) GetHomework(lesson_id int) ([]models.Homework, error) {
 	return s.repo.GetHomework(lesson_id)
 }

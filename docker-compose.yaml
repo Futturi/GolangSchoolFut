@@ -9,3 +9,10 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: 12345
+  redis-server:
+    image: "redis"
+    container_name: red
+    ports:
+      - '6379:6379'
+    restart: unless-stopped
+    

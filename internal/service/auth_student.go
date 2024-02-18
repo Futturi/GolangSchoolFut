@@ -64,3 +64,7 @@ func (h *AuthServiceUser) ParseTokenUser(header string) (int, error) {
 	}
 	return Claims.Id, nil
 }
+
+func (h *AuthServiceUser) CheckHealth(user_id int) int {
+	return h.repo.CheckHealth(user_id)
+}

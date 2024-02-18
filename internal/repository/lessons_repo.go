@@ -117,30 +117,50 @@ func (r *LessonRepo) UpdateLesson(id, lesson_id int, fil models.UpdateLesson) (m
 	return fil, nil
 }
 
-func (r *LessonRepo) CreateHomework(homework models.Homework, lesson_id int) (string, error) {
-	var idhom int
-	tx, err := r.db.Begin()
-	if err != nil {
-		return "bad", err
-	}
+// func (r *LessonRepo) CreateHomework(homework models.Homework, lesson_id int) (string, error) {
+// 	var idhom int
+// 	var iduser int
+// 	tx, err := r.db.Begin()
+// 	if err != nil {
+// 		return "bad", err
+// 	}
 
-	query1 := fmt.Sprintf("INSERT INTO %s(title, descript, lesson_id) VALUES ($1, $2, $3) RETURNING id", homeworkTable)
+// 	query1 := fmt.Sprintf("INSERT INTO %s(title, descript, lesson_id) VALUES ($1, $2, $3) RETURNING id", homeworkTable)
 
-	row := tx.QueryRow(query1, homework.Title, homework.Descript, lesson_id)
-	err = row.Scan(&idhom)
-	if err != nil {
-		tx.Rollback()
-		return "bad", err
-	}
+// 	row := tx.QueryRow(query1, homework.Title, homework.Descript, lesson_id)
+// 	err = row.Scan(&idhom)
+// 	if err != nil {
+// 		tx.Rollback()
+// 		return "bad", err
+// 	}
 
-	query2 := fmt.Sprintf("UPDATE %s SET homework_id = $1 WHERE id = $2", lessonsTable)
-	_, err = tx.Exec(query2, idhom, lesson_id)
-	if err != nil {
-		tx.Rollback()
-		return "bad", err
-	}
-	return "good", tx.Commit()
-}
+// 	query2 := fmt.Sprintf("UPDATE %s SET homework_id = $1 WHERE id = $2", lessonsTable)
+// 	_, err = tx.Exec(query2, idhom, lesson_id)
+// 	if err != nil {
+// 		tx.Rollback()
+// 		return "bad", err
+// 	}
+// 	if err = tx.Commit(); err != nil {
+// 		return "bad", err
+// 	}
+// 	tx2, err := r.db.Begin()
+// 	if err != nil {
+// 		return "bad", err
+// 	}
+// 	query3 := fmt.Sprintf("SELECT user_id FROM %s WHERE lesson_id = $1", lesson_userTable)
+// 	row3 := tx2.QueryRow(query3, lesson_id)
+// 	if err = row3.Scan(&iduser); err != nil {
+// 		tx2.Rollback()
+// 		return "bad", err
+// 	}
+// 	query4 := fmt.Sprintf("INSERT INTO %s(homework_id, user_id) VALUES($1, $2)", homeworks_userTable)
+// 	_, err = tx2.Exec(query4, idhom, iduser)
+// 	if err != nil {
+// 		tx2.Rollback()
+// 		return "bad", err
+// 	}
+// 	return "good", tx2.Commit()
+// }
 
 func (r *LessonRepo) PutFile(name string, lesson_id int) error {
 	query := fmt.Sprintf("UPDATE %s SET filename = $1 WHERE id = $2", lessonsTable)
@@ -150,21 +170,21 @@ func (r *LessonRepo) PutFile(name string, lesson_id int) error {
 	}
 	return nil
 }
-func (r *LessonRepo) CheckHomework(teacher_id, lesson_id, status int) error {
-	query := fmt.Sprintf("UPDATE %s SET mark = $1 FROM %s l WHERE l.id = $2", homeworkTable, lessonsTable)
-	_, err := r.db.Exec(query, status, lesson_id)
+func (r *LessonRepo) CheckHomework(teacher_id, lesson_id int, status models.CheckHom) error {
+	query := fmt.Sprintf("UPDATE %s SET mark = $1 FROM %s hl WHERE hl.lesson_id = $2 AND hl.homework_id = $3", homeworkTable, lesson_homeworksTable)
+	_, err := r.db.Exec(query, status.Mark, lesson_id, status.Homework_Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *LessonRepo) GetHomework(lesson_id int) (models.Homework, error) {
-	var hm models.Homework
-	query := fmt.Sprintf("SELECT title, descript,mark from %s h INNER JOIN %s l WHERE l.id = $1 AND l.homework_id=h.id", homeworkTable, lessonsTable)
-	row := r.db.QueryRow(query, lesson_id)
-	if err := row.Scan(&hm); err != nil {
-		return models.Homework{}, err
+func (r *LessonRepo) GetHomework(lesson_id int) ([]models.Homework, error) {
+	var hm []models.Homework
+	query := fmt.Sprintf("SELECT id, title, descript, mark FROM %s h INNER JOIN %s hl ON hl.lesson_id = $1", homeworkTable, lesson_homeworksTable)
+	err := r.db.Select(&hm, query, lesson_id)
+	if err != nil {
+		return []models.Homework{}, err
 	}
 
 	return hm, nil
