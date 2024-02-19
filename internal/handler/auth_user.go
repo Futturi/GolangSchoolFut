@@ -17,7 +17,7 @@ func (h *Handler) SignUpUser(c *gin.Context) {
 		})
 	}
 
-	result, err := h.service.SignUpStudent(user)
+	result, err := h.service.SignUpStudent(user, h.cfg)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
@@ -37,13 +37,46 @@ func (h *Handler) SignInUser(c *gin.Context) {
 			"errors": err.Error(),
 		})
 	}
-	token, err := h.service.SignInStudent(userLog)
+	token, refer, err := h.service.SignInStudent(userLog)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, map[string]interface{}{
 			"errors": err.Error(),
 		})
 	}
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"access_token": token,
+		"access_token":  token,
+		"refresh_token": refer,
+	})
+}
+
+func (h *Handler) RefreshUser(c *gin.Context) {
+	var refresh models.Refresh
+	err := c.BindJSON(&refresh)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	access, err := h.service.RefreshUser(refresh)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"access_token": access,
+	})
+}
+
+func (h *Handler) CheckToken(c *gin.Context) {
+	token := c.Param("email_token")
+	err := h.service.CheckToken(token)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, map[string]string{
+		"status": "your email is verified",
 	})
 }

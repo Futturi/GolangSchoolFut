@@ -12,6 +12,11 @@ type Service struct {
 	LessonsUser
 	Infos
 }
+type Sender struct {
+	EmailSenderName     string
+	EmailSenderAddress  string
+	EmailSenderPassword string
+}
 
 type Lessons interface {
 	GetAllLessonsTeacher(id int) ([]models.Lesson, error)
@@ -32,10 +37,12 @@ type Authorization interface {
 }
 
 type AuthorizationUser interface {
-	SignUpStudent(user models.Student) (string, error)
-	SignInStudent(userlog models.SignInStudent) (string, error)
+	SignUpStudent(user models.Student, cfg Sender) (string, error)
+	SignInStudent(userlog models.SignInStudent) (string, string, error)
 	ParseTokenUser(header string) (int, error)
 	CheckHealth(user_id int) int
+	RefreshUser(refresh models.Refresh) (string, error)
+	CheckToken(token string) error
 }
 
 type LessonsUser interface {

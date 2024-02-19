@@ -35,6 +35,11 @@ func main() {
 		Password: "",
 		Db:       0,
 	}
+	mcfg := service.Sender{
+		EmailSenderName:     os.Getenv("EMAIL_SENDER_NAME"),
+		EmailSenderAddress:  os.Getenv("EMAIL_SENDER_ADDRESS"),
+		EmailSenderPassword: os.Getenv("EMAIL_SENDER_PASSWORD"),
+	}
 	rdb := pkg.NewRedis(rcfg)
 	db, err := repositoryinitf.InitPostgre(cfg)
 	if err != nil {
@@ -42,7 +47,7 @@ func main() {
 	}
 	repo := repository.NewReposiotry(db, rdb)
 	serv := service.NewService(repo)
-	hand := handler.NewHandler(serv)
+	hand := handler.NewHandler(serv, mcfg)
 
 	serve := new(server.Server)
 	if err = serve.InitServer(viper.GetString("port"), hand.InitRoutes()); err != nil {

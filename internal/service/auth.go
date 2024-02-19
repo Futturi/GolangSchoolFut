@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"fmt"
-	"math/rand"
 	"time"
 
 	"github.com/Futturi/GolangSchoolProject/internal/models"
@@ -35,7 +34,7 @@ type Claims struct {
 }
 
 func (h *AuthService) SignIn(mod models.SignInTeacher) (string, string, error) {
-	refresh := h.GenerateRefresh(mod.Username, mod.Password)
+	refresh := utils.GenerateRefresh()
 	fmt.Println(refresh)
 	mod.Password = utils.HashPass(mod.Password)
 	id, err := h.repo.SignIn(mod, refresh, time.Now().Add(24*30*time.Hour).Unix())
@@ -66,12 +65,6 @@ func (h *AuthService) ParseToken(header string) (int, error) {
 		return 0, errors.New("token claims are not of type *tokenClaims")
 	}
 	return Claims.Id, nil
-}
-
-func (h *AuthService) GenerateRefresh(username, password string) string {
-	result := make([]byte, 32)
-	rand.Read(result)
-	return fmt.Sprintf("%x", result)
 }
 
 func (h *AuthService) RefreshToken(refresh string) (string, error) {

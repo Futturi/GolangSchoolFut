@@ -7,16 +7,16 @@ import (
 
 type Handler struct {
 	service *service.Service
+	cfg     service.Sender
 }
 
-func NewHandler(serv *service.Service) *Handler {
-	return &Handler{service: serv}
+func NewHandler(serv *service.Service, cfg service.Sender) *Handler {
+	return &Handler{service: serv, cfg: cfg}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	handler := gin.Default()
-	handler.GET("/", h.Info) //инфа о школе, которая хранится в кэше(редисе)
-	// кол-во учеников, кол-во уроков
+	handler.GET("/", h.Info)
 	teacher := handler.Group("/admin")
 	{
 		auth := teacher.Group("/auth")
@@ -49,6 +49,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			auth.POST("/signup", h.SignUpUser)
 			auth.POST("/signin", h.SignInUser)
+			auth.POST("/refresh", h.RefreshUser)
+			auth.GET("/:email_token", h.CheckToken)
 		}
 		lessons := user.Group("/lessons", h.CheckIdentityUser, h.CheckHealth)
 		{
@@ -60,8 +62,5 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	return handler
 }
 
-//TODO:
-// добавить общий get запрос на котором будет инфа про школу
-// инфу буду хранить в редисе(как кэш собстна)
 // добавить логирование
 // отправка писем про подтверждение email(разобраться)

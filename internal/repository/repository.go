@@ -44,8 +44,11 @@ type Authorization interface {
 
 type AuthorizationUser interface {
 	SignUpStudent(user models.Student) (string, error)
-	SignInStudent(userlog models.SignInStudent) (int, error)
+	SignInStudent(userlog models.SignInStudent, refresh string, exp int64) (int, error)
 	CheckHealth(user_id int) int
+	GetIdByRefresh(refresh models.Refresh) (int, int64, error)
+	CheckToken(token string) error
+	CheckVer(userlog models.SignInStudent) (bool, error)
 }
 
 type LessonsUser interface {
