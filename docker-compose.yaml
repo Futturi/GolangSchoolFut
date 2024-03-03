@@ -1,8 +1,21 @@
 version: '3.5'
 services:
+  app:
+    build: ./
+    ports:
+      - '8001:8001'
+    container_name: app
+    restart: unless-stopped
+    depends_on:
+      - sql-server
+      - redis-server
+    environment:
+      - DB_PASSWORD=12345
+      - EMAIL_SENDER_NAME=test
+      - EMAIL_SENDER_ADDRESS=vanech12345@gmail.com
+      - EMAIL_SENDER_PASSWORD=lvtirwiticdgmemn
   sql-server:
     image: postgres
-    container_name: db2
     ports:
       - '5432:5432'
     restart: unless-stopped
@@ -11,8 +24,6 @@ services:
       POSTGRES_PASSWORD: 12345
   redis-server:
     image: "redis"
-    container_name: red
     ports:
       - '6379:6379'
     restart: unless-stopped
-    

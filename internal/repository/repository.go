@@ -34,6 +34,7 @@ type Lessons interface {
 	PutFile(name string, lesson_id int) error
 	CheckHomework(teacher_id, lesson_id int, status models.CheckHom) error
 	GetHomework(lesson_id int) ([]models.Homework, error)
+	DecrementHealth(lesson_id int, status models.CheckHom) error
 }
 
 type Authorization interface {

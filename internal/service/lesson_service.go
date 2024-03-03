@@ -45,6 +45,12 @@ func (s *LessonsService) CheckHomework(teacher_id, lesson_id int, status models.
 	if status.Mark > 5 || status.Mark < 0 {
 		return errors.New("your mark is > than 5 or < than 0")
 	}
+	if status.Mark > 0 && status.Mark <= 2 {
+		err := s.repo.DecrementHealth(lesson_id, status)
+		if err != nil {
+			return err
+		}
+	}
 	return s.repo.CheckHomework(teacher_id, lesson_id, status)
 }
 

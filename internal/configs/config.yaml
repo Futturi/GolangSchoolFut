@@ -1,11 +1,11 @@
 port: "8001"
 
 db:
- host: "localhost"
+ host: "sql-server"
  port: "5432"
  username: "root"
  namedb: "root"
  sslmode: "disable"
 red:
  port: "6379"
- host: "localhost:"
+ host: "redis-server"

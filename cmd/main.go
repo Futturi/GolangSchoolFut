@@ -31,7 +31,7 @@ func main() {
 		Sslmode:  viper.GetString("db.sslmode"),
 	}
 	rcfg := pkg.RedisConf{
-		Addr:     viper.GetString("red.host") + viper.GetString("red.port"),
+		Addr:     viper.GetString("red.host") + ":" + viper.GetString("red.port"),
 		Password: "",
 		Db:       0,
 	}

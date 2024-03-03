@@ -189,3 +189,12 @@ func (r *LessonRepo) GetHomework(lesson_id int) ([]models.Homework, error) {
 
 	return hm, nil
 }
+
+func (r *LessonRepo) DecrementHealth(lesson_id int, status models.CheckHom) error {
+	query := fmt.Sprintf("UPDATE %s SET heart = hearts - 1 FROM %s hu WHERE hu.homework_id=$1", studentTable, homeworks_userTable)
+	_, err := r.db.Exec(query, status.Homework_Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
