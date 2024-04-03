@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -50,6 +51,7 @@ func main() {
 	hand := handler.NewHandler(serv, mcfg)
 
 	serve := new(server.Server)
+	fmt.Println(viper.GetString("port"))
 	if err = serve.InitServer(viper.GetString("port"), hand.InitRoutes()); err != nil {
 		log.Fatal("erorr")
 	}
@@ -58,6 +60,6 @@ func main() {
 func InitConfig() error {
 	viper.SetConfigType("yml")
 	viper.SetConfigName("config")
-	viper.AddConfigPath("internal/configs")
+	viper.AddConfigPath("configs")
 	return viper.ReadInConfig()
 }

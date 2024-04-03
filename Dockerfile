@@ -1,9 +1,17 @@
-FROM golang:1.22.0
-RUN go version
-ENV GOPATH=/
-COPY ./ ./
+FROM golang:alpine AS builder
 
-RUN go mod tidy
-RUN go mod download
-RUN go build -o golang-school ./cmd/main.go
-CMD [ "./golang-school" ]
+WORKDIR /build
+
+ADD go.mod .
+
+COPY . .
+
+RUN go build -o app ./cmd/main.go
+
+FROM alpine
+
+WORKDIR /build
+
+COPY --from=builder /build/app /build/app
+COPY configs/config.yaml /build/configs/config.yaml
+CMD ["./app"]
